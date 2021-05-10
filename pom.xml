@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements. See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership. The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License. You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.github.rotty3000</groupId>
+	<artifactId>com.github.rotty3000.osgi-config-aff</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<bnd.version>5.3.0</bnd.version>
+		<slf4j.version>1.7.22</slf4j.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-resolver-maven-plugin</artifactId>
+				<version>${bnd.version}</version>
+				<executions>
+					<execution>
+						<id>resolve</id>
+						<goals>
+							<goal>resolve</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<reportOptional>false</reportOptional>
+							<failOnChanges>false</failOnChanges>
+							<includeDependencyManagement>true</includeDependencyManagement>
+							<bndruns>
+								<bndrun>base.bndrun</bndrun>
+							</bndruns>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-export-maven-plugin</artifactId>
+				<version>${bnd.version}</version>
+				<executions>
+					<execution>
+						<id>export</id>
+						<goals>
+							<goal>export</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<failOnChanges>false</failOnChanges>
+							<includeDependencyManagement>true</includeDependencyManagement>
+							<bndruns>
+								<bndrun>osgi-config-exec.bndrun</bndrun>
+							</bndruns>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-run-maven-plugin</artifactId>
+				<version>${bnd.version}</version>
+				<executions>
+					<execution>
+						<id>osgi-config</id>
+						<configuration>
+							<includeDependencyManagement>true</includeDependencyManagement>
+							<bndrun>osgi-config.bndrun</bndrun>
+						</configuration>
+					</execution>
+			  </executions>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.configadmin</artifactId>
+				<version>1.9.20</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.configadmin.plugin.interpolation</artifactId>
+				<version>1.1.3-SNAPSHOT</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.converter</artifactId>
+				<version>1.0.14</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.fileinstall</artifactId>
+				<version>3.6.9-SNAPSHOT</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.framework</artifactId>
+				<version>7.0.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.log</artifactId>
+				<version>1.2.4</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.log.extension</artifactId>
+				<version>1.0.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.logback</artifactId>
+				<version>1.0.2</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.osgi</groupId>
+				<artifactId>org.osgi.util.function</artifactId>
+				<version>1.1.0</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.gogo.bom</artifactId>
+				<version>1.0.6</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<repositories>
+		<repository>
+			<id>apache-snapshots</id>
+			<url>http://repository.apache.org/snapshots/</url>
+			<releases><enabled>false</enabled></releases>
+		</repository>
+	</repositories>
+</project>

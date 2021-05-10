@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: osgi-configmap-demo-pod
+spec:
+  containers:
+    - image: osgi-config-aff
+      name: osgi-configmap-demo-pod-demo
+      imagePullPolicy: Never
+      resources:
+        limits:
+          cpu: "250m"
+          memory: "128Mi"
+      env:
+        # Define an environment variable
+        - name: player_initial_lives
+          valueFrom:
+            configMapKeyRef:
+              name: osgi-configmap-demo # The ConfigMap this value comes from.
+              key: player_initial_lives # The key to fetch.
+      volumeMounts:
+      - name: osgi-config         # Mount the volume with this name
+        mountPath: "/mnt/configs" # Mount it this path
+        readOnly: true
+      - name: logback-config
+        mountPath: "/mnt/logback"
+        readOnly: true
+  volumes:
+    # You set volumes at the Pod level, then mount them into containers inside that Pod
+    - name: osgi-config
+      configMap:
+        # Provide the name of the ConfigMap you want to mount.
+        name: osgi-configmap-demo
+        # An array of keys from the ConfigMap to create as files
+        # These are the OSGi FileInstall configuration files to be mounted
+        items:
+        - key: "game.pid.config"
+          path: "game.pid.config"
+    - name: logback-config
+      configMap:
+        name: logback-configmap-demo
+        items:
+        - key: "logback.xml"
+          path: "logback.xml"
