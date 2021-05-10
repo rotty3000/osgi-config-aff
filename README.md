@@ -1,4 +1,4 @@
-# osgi-config-aff
+# config-osgi-k8s-demo
 
 ## OSGi Conguration Admin / Kubernetes Integration Prototype
 
@@ -17,7 +17,7 @@ The interpolation plugin in this setup supports multiple directories using comma
 Start the container using the most basic invocation:
 
 ```
-docker run -it osgi-config-aff:latest
+docker run -it rotty3000/config-osgi-k8s-demo:latest
 ```
 
 ### Logging
@@ -29,17 +29,17 @@ There's a complete OSGi Log Service (1.4) & slf4j logging setup with a default `
 There's a telnet client present so if you `exec` into the container you can connect to it
 
 ```bash
-docker exec -it osgi-config-aff telnet localhost 11311
+docker exec -it rotty3000/config-osgi-k8s-demo:latest telnet localhost 11311
 ```
 
 Here's a more thorough example using the sample files in the local `configs` directory and the `logback.xml` that turns up the configuration infra log levels.
 
 ```bash
 docker run -it \
-	--rm --name osgi-config-aff \
+	--rm --name config-osgi-k8s-demo \
 	-v "$(pwd)/logback.xml:/mnt/logback/logback.xml" \
 	-v "$(pwd)/configs:/mnt/configs" \
-	osgi-config-aff:latest
+	rotty3000/config-osgi-k8s-demo:latest
 ```
 
 ### Easy System Properties
@@ -55,10 +55,10 @@ docker run \
 	-it \ # run interactively
 	-p 8000:8000 \ # open port 8000 for host debugging
 	--rm \ # remove any existing containers (just for testing)
-	--name osgi-config-aff \ # call it what you want...
+	--name config-osgi-k8s-demo \ # call it what you want...
 	-v "$(pwd)/mnt/configs:/mnt/configs" \ # mount the sample scan directory
 	-e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:8000" \ # debug
-	osgi-config-aff:latest
+	rotty3000/config-osgi-k8s-demo:latest
 ```
 
 ## Build docker image
@@ -73,7 +73,7 @@ To build the image, execute:
 
 ```bash
 docker build --pull --rm -f "Dockerfile" \
-	-t osgi-config-aff:latest \
+	-t rotty3000/config-osgi-k8s-demo \
 	"."
 ```
 
@@ -103,7 +103,7 @@ metadata:
   name: osgi-configmap-demo-pod
 spec:
   containers:
-    - image: osgi-config-aff
+    - image: rotty3000/config-osgi-k8s-demo
       name: osgi-configmap-demo-pod-demo
       imagePullPolicy: Never
       resources:
