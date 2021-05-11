@@ -22,6 +22,7 @@ on:
 
 env:
   LC_ALL: en_US.UTF-8
+  IMAGE_NAME: config-osgi-k8s-demo
 
 jobs:
   JDKxx_Matrix:
@@ -32,18 +33,35 @@ jobs:
     name: JDK${{ matrix.java }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
+
     - name: Git Checkout
       uses: actions/checkout@v2
+
     - name: Set up Java
       uses: actions/setup-java@v2
       with:
         distribution: 'zulu'
         check-latest: ${{ endsWith(matrix.java, '-ea') }}
         java-version: ${{ matrix.java }}
-    - name: Build
+
+    - name: Maven Build
       continue-on-error: ${{contains(matrix.java, '-ea')}}
       shell: bash
       run: |
         mvn -U -e -B -ntp install
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+    - name: Build the Docker Image
+      run: |
+        docker build . --file Dockerfile --tag $IMAGE_NAME
+
+    - name: Docker Hub Login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+      #  DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{secrets.DOCKER_USER}} --password-stdin
+      #docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+    - name: Docker Hub Push
+      run: |
+        docker push ${{secrets.DOCKER_USER}}/$IMAGE_NAME
