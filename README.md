@@ -2,6 +2,8 @@
 
 ## OSGi Conguration Admin / Kubernetes Integration Prototype
 
+[![CI Build](https://github.com/rotty3000/osgi-config-aff/actions/workflows/maven.yml/badge.svg)](https://github.com/rotty3000/osgi-config-aff/actions/workflows/maven.yml)
+
 This project produces a Docker image that contains a complete prototype integrating OSGi Configuration Admin with *live*, volume mounted [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
 
 Use ConfigMap or Secret files to mount [Apache Felix FileInstall](https://felix.apache.org/documentation/subprojects/apache-felix-file-install.html) compatible config (`.cfg|.config`) files to the `/mnt/configs` directory *(or to another directory... if you like, just remember to override the defaults set in the Dockerfile).*
