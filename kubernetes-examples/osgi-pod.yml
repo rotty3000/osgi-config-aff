@@ -4,9 +4,10 @@ metadata:
   name: osgi-configmap-demo-pod
 spec:
   containers:
-    - image: osgi-config-aff
+    - image: rotty3000/config-osgi-k8s-demo
       name: osgi-configmap-demo-pod-demo
-      imagePullPolicy: Never
+      ## Set `imagePullPolicy` to `Never` when images only exist locally
+      #imagePullPolicy: Never
       resources:
         limits:
           cpu: "250m"
