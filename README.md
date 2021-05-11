@@ -74,9 +74,8 @@ eval $(minikube docker-env)
 To build the image, execute:
 
 ```bash
-docker build --pull --rm -f "Dockerfile" \
-	-t rotty3000/config-osgi-k8s-demo \
-	"."
+docker build . --pull --rm -f Dockerfile \
+	-t config-osgi-k8s-demo
 ```
 
 ## ConfigMap Example
@@ -143,13 +142,4 @@ spec:
         items:
         - key: "logback.xml"
           path: "logback.xml"
-```
-
-#### Notes
-
-Get *processed* configuration properties
-```
-g! sr = servicereference org.osgi.service.cm.ConfigurationAdmin
-
-g! (getconfiguration "game.pid") processedproperties $sr
 ```
