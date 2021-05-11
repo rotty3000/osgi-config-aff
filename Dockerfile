@@ -18,6 +18,9 @@
 FROM azul/zulu-openjdk-alpine:11-jre-headless
 
 RUN \
+	adduser -s /bin/false -D appuser
+
+RUN \
 	mkdir /app && \
 	mkdir /mnt/logback && \
 	mkdir /mnt/configs
@@ -35,6 +38,9 @@ COPY start /app/start
 
 RUN \
 	chmod +x /app/start && \
+	chown -R appuser:appuser /app && \
+	chown -R appuser:appuser /mnt/configs && \
+	chown -R appuser:appuser /mnt/logback && \
 	tree /app && \
 	apk del unzip
 
@@ -46,5 +52,7 @@ ENV -Dlogback.configurationFile=file:/mnt/logback/logback.xml
 ENV -Dorg.apache.felix.configadmin.plugin.interpolation.secretsdir=/mnt/configs
 
 WORKDIR /app
+
+USER appuser
 
 CMD /app/start
