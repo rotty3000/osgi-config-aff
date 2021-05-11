@@ -23,6 +23,7 @@ on:
 env:
   LC_ALL: en_US.UTF-8
   IMAGE_NAME: config-osgi-k8s-demo
+  DOCKER_USER: ${{secrets.DOCKER_USER}}
 
 jobs:
   JDKxx_Matrix:
@@ -52,16 +53,12 @@ jobs:
 
     - name: Build the Docker Image
       run: |
-        docker build . --file Dockerfile --tag $IMAGE_NAME
+        docker build . --file Dockerfile --tag $DOCKER_USER/$IMAGE_NAME
 
     - name: Docker Hub Login
-      env:
-        DOCKER_USER: ${{secrets.DOCKER_USER}}
-      #  DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       run: |
-        echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{secrets.DOCKER_USER}} --password-stdin
-      #docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{secrets.DOCKER_USER}} --password-stdin
 
     - name: Docker Hub Push
       run: |
-        docker push ${{secrets.DOCKER_USER}}/$IMAGE_NAME
+        docker push $DOCKER_USER/$IMAGE_NAME
