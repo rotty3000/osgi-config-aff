@@ -29,7 +29,7 @@ COPY target/osgi-config-exec.jar /app/osgi-config.jar
 COPY default-logback.xml /mnt/logback/logback.xml
 
 RUN \
-	apk add bash unzip tree busybox-extras && \
+	apk add dumb-init bash unzip tree busybox-extras && \
 	unzip /app/osgi-config.jar -d /app && \
 	rm /app/osgi-config.jar /app/start.bat && \
 	rm -rf /app/META-INF/maven /app/OSGI-OPT
@@ -55,4 +55,4 @@ WORKDIR /app
 
 USER appuser
 
-CMD /app/start
+CMD ["dumb-init", "/app/start"]
