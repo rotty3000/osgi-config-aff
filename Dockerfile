@@ -44,13 +44,6 @@ RUN \
 	tree /app && \
 	apk del unzip
 
-ENV -Dfelix.cm.config.plugins=org.apache.felix.configadmin.plugin.interpolation
-ENV -Dfelix.fileinstall.dir=/mnt/configs
-ENV -Dfelix.fileinstall.log.level=4
-ENV -Dgosh.args="--nointeractive -c telnetd -i 0.0.0.0 -p 11311 start"
-ENV -Dlogback.configurationFile=file:/mnt/logback/logback.xml
-ENV -Dorg.apache.felix.configadmin.plugin.interpolation.secretsdir=/mnt/configs
-
 WORKDIR /app
 
 USER appuser

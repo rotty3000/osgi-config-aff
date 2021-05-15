@@ -17,4 +17,10 @@
 
 -include: base.bndrun
 
--runproperties:
+-runproperties: \
+	felix.cm.config.plugins=org.apache.felix.configadmin.plugin.interpolation, \
+	felix.fileinstall.dir=/mnt/configs, \
+	felix.fileinstall.log.level=4, \
+	gosh.args="--nointeractive -c telnetd -i 0.0.0.0 -p 11311 start", \
+	logback.configurationFile=file:/mnt/logback/logback.xml, \
+	org.apache.felix.configadmin.plugin.interpolation.secretsdir=/mnt/configs
