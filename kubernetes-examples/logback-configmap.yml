@@ -33,13 +33,12 @@ data:
         </encoder>
       </appender>
 
-      <logger name="Event.Service.org.apache.felix.framework" level="ERROR" />
-      <logger name="Event.Service.org.apache.felix.gogo.command" level="ERROR" />
+      <logger name="Events" level="ERROR"   />
       <logger name="LogService.org.apache.felix.configadmin" level="ERROR" />
       <logger name="LogService.org.apache.felix.fileinstall" level="DEBUG" />
       <logger name="org.apache.felix.configadmin.plugin.interpolation" level="DEBUG" />
 
-      <root level="ERROR">
+      <root level="INFO">
         <appender-ref ref="STDOUT" />
       </root>
     </configuration>
