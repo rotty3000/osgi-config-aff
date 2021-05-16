@@ -15,9 +15,12 @@
 #    specific language governing permissions and limitations
 #    under the License.
 
-FROM alpine:latest AS build
+FROM azul/zulu-openjdk-alpine:11 AS build
 
-RUN mkdir -p /app/bin /app/log /app/configs
+RUN mkdir -p \
+	/app/bin \
+	/app/configs \
+	/app/log
 
 COPY target/exec.jar /app/exec.jar
 COPY default-logback.xml /app/log/logback.xml
@@ -26,11 +29,15 @@ RUN \
 	apk add unzip tree && \
 	unzip /app/exec.jar -d /app/bin && \
 	rm /app/exec.jar /app/bin/start /app/bin/start.bat && \
-	rm -rf /app/bin/META-INF/maven /app/bin/OSGI-OPT
+	rm -rf /app/bin/META-INF/maven /app/bin/OSGI-OPT && \
+	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive /app/bin/jar/*.jar` && \
+	$JAVA_HOME/bin/jlink --add-modules $MODULES,jdk.unsupported,jdk.jdwp.agent --compress=2 --output /app/jre
 
 COPY start /app/bin/start
 
-FROM azul/zulu-openjdk-alpine:11-jre-headless
+RUN tree /app
+
+FROM alpine:latest
 
 COPY --from=build /app /app
 
@@ -39,6 +46,8 @@ RUN \
 	adduser -s /bin/false -D appuser && \
 	chmod +x /app/bin/start && \
 	chown -R appuser:appuser /app
+
+ENV PATH=/app/jre/bin:$PATH
 
 WORKDIR /app/bin
 
