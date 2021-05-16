@@ -69,7 +69,7 @@
 							<failOnChanges>false</failOnChanges>
 							<includeDependencyManagement>true</includeDependencyManagement>
 							<bndruns>
-								<bndrun>osgi-config-exec.bndrun</bndrun>
+								<bndrun>exec.bndrun</bndrun>
 							</bndruns>
 						</configuration>
 					</execution>

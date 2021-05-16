@@ -24,10 +24,10 @@ spec:
           value: "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8000"
       volumeMounts:
       - name: osgi-config         # Mount the volume with this name
-        mountPath: "/mnt/configs" # Mount it this path
+        mountPath: "/app/configs" # Mount it this path
         readOnly: true
       - name: logback-config
-        mountPath: "/mnt/logback"
+        mountPath: "/app/log"
         readOnly: true
   volumes:
     # You set volumes at the Pod level, then mount them into containers inside that Pod

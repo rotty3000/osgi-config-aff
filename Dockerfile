@@ -15,37 +15,33 @@
 #    specific language governing permissions and limitations
 #    under the License.
 
+FROM alpine:latest AS build
+
+RUN mkdir -p /app/bin /app/log /app/configs
+
+COPY target/exec.jar /app/exec.jar
+COPY default-logback.xml /app/log/logback.xml
+
+RUN \
+	apk add unzip tree && \
+	unzip /app/exec.jar -d /app/bin && \
+	rm /app/exec.jar /app/bin/start /app/bin/start.bat && \
+	rm -rf /app/bin/META-INF/maven /app/bin/OSGI-OPT
+
+COPY start /app/bin/start
+
 FROM azul/zulu-openjdk-alpine:11-jre-headless
 
-RUN \
-	adduser -s /bin/false -D appuser
+COPY --from=build /app /app
 
 RUN \
-	mkdir /app && \
-	mkdir /mnt/logback && \
-	mkdir /mnt/configs
+	apk add dumb-init tree busybox-extras && \
+	adduser -s /bin/false -D appuser && \
+	chmod +x /app/bin/start && \
+	chown -R appuser:appuser /app
 
-COPY target/osgi-config-exec.jar /app/osgi-config.jar
-COPY default-logback.xml /mnt/logback/logback.xml
-
-RUN \
-	apk add dumb-init bash unzip tree busybox-extras && \
-	unzip /app/osgi-config.jar -d /app && \
-	rm /app/osgi-config.jar /app/start.bat && \
-	rm -rf /app/META-INF/maven /app/OSGI-OPT
-
-COPY start /app/start
-
-RUN \
-	chmod +x /app/start && \
-	chown -R appuser:appuser /app && \
-	chown -R appuser:appuser /mnt/configs && \
-	chown -R appuser:appuser /mnt/logback && \
-	tree /app && \
-	apk del unzip
-
-WORKDIR /app
+WORKDIR /app/bin
 
 USER appuser
 
-CMD ["dumb-init", "/app/start"]
+CMD ["dumb-init", "/app/bin/start"]
