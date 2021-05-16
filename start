@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #    Licensed to the Apache Software Foundation (ASF) under one
 #    or more contributor license agreements.  See the NOTICE file
@@ -17,22 +17,9 @@
 #    specific language governing permissions and limitations
 #    under the License.
 
-#
-# Environment variables that begin with `-D` or with `-X` will be
-# passed to the java command.
-#
+JAVA_CMD="java ${JAVA_OPTS} -cp . aQute.launcher.pre.EmbeddedLauncher"
 
-ARGS=($(env | grep '^-[D]' | sed -e "s/=/='/" | awk '{print ""$0"'\''"}'))
-
-JAVA_CMD="java ${JAVA_OPTS}"
-
-for i in "${ARGS[@]}"; do
-	JAVA_CMD="$JAVA_CMD ${i}"
-done
-
-JAVA_CMD="$JAVA_CMD -cp"
-JAVA_CMD="$JAVA_CMD ."
-JAVA_CMD="$JAVA_CMD aQute.launcher.pre.EmbeddedLauncher"
-
+echo "====="
 echo "EXEC: ${JAVA_CMD}"
+echo "====="
 eval "${JAVA_CMD}"
