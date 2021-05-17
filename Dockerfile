@@ -34,18 +34,17 @@ RUN \
 	$JAVA_HOME/bin/jlink --add-modules $MODULES,jdk.unsupported,jdk.jdwp.agent --compress=2 --output /app/jre
 
 COPY start /app/bin/start
+RUN chmod +x /app/bin/start
 
 RUN tree /app
 
-FROM alpine:latest
-
-COPY --from=build /app /app
+FROM alpine:3
 
 RUN \
-	apk add dumb-init tree busybox-extras && \
-	adduser -s /bin/false -D appuser && \
-	chmod +x /app/bin/start && \
-	chown -R appuser:appuser /app
+	apk --no-cache add dumb-init busybox-extras tree && \
+	adduser -s /bin/false -D appuser
+
+COPY --from=build --chown=appuser:appuser /app /app
 
 ENV PATH=/app/jre/bin:$PATH
 
