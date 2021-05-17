@@ -8,5 +8,5 @@ data:
 
   # FileInstall Config Files
   game.pid.config: |
-    player.initial.lives="$[env:player_initial_lives]"
-    player.maximum-lives="5"
+    player.initial.lives=l"${env:player_initial_lives}"
+    player.maximum.lives=i"5"

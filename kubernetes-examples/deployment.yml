@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: osgi-configmap-demo-pod-demo
-          image: rotty3000/config-osgi-k8s-demo
+          image: rotty3000/config-osgi-k8s-demo:next
           ## Set `imagePullPolicy` to `Never` when images only exist locally
           imagePullPolicy: Never
           resources:
