@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: osgi-configmap-demo-pod-demo
-          image: rotty3000/config-osgi-k8s-demo:next
+          image: rotty3000/config-osgi-k8s-demo
           ## Set `imagePullPolicy` to `Never` when images only exist locally
           imagePullPolicy: Never
           resources:
@@ -26,11 +26,6 @@ spec:
               memory: "128Mi"
           env:
             # Define an environment variable
-            - name: player_initial_lives
-              valueFrom:
-                configMapKeyRef:
-                  name: osgi-configmap-demo # The ConfigMap this value comes from.
-                  key: player_initial_lives # The key to fetch.
             # Enable DEBUGGING
             - name: JAVA_OPTS
               value: "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8000"
@@ -47,14 +42,6 @@ spec:
           configMap:
             # Provide the name of the ConfigMap you want to mount.
             name: osgi-configmap-demo
-            # An array of keys from the ConfigMap to create as files
-            # These are the OSGi FileInstall configuration files to be mounted
-            items:
-            - key: "game.pid.config"
-              path: "game.pid.config"
         - name: logback-config
           configMap:
             name: logback-configmap-demo
-            items:
-            - key: "logback.xml"
-              path: "logback.xml"

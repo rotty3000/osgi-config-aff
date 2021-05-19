@@ -8,5 +8,6 @@ data:
 
   # FileInstall Config Files
   game.pid.config: |
-    player.initial.lives=l"${env:player_initial_lives}"
+    player.initial.lives="$[secret:player_initial_lives;type=long]"
     player.maximum.lives=i"5"
+    colors="$[secret:colors;type=String[];delimiter=|;default=green|red|blue]"
