@@ -1,6 +1,6 @@
 # config-osgi-k8s-demo
 
-## OSGi Conguration Admin / Kubernetes Integration Prototype
+## OSGi Configuration Admin / Kubernetes Integration Prototype
 
 [![CI Build](https://github.com/rotty3000/osgi-config-aff/actions/workflows/maven.yml/badge.svg)](https://github.com/rotty3000/osgi-config-aff/actions/workflows/maven.yml)
 
@@ -10,7 +10,7 @@ Use ConfigMap or Secret files to mount [Apache Felix FileInstall](https://felix.
 
 The [Apache Felix Interpolation plugin](https://github.com/apache/felix-dev/blob/master/configadmin-plugins/interpolation/README.md) is also configured by default with the `/mnt/configs` directory and ready to replace placeholders found in your configurations with the Secrets found there.
 
-The interpolation plugin in this setup supports multiple directories using comma-separated syntax to accomodate multiple Secrets directory mounts.
+The interpolation plugin in this setup supports multiple directories using comma-separated syntax to accommodate multiple Secrets directory mounts.
 
 *FYI* You can even install bundles by placing them into the `/mnt/configs` directory if you wish.
 
@@ -24,7 +24,7 @@ docker run -it rotty3000/config-osgi-k8s-demo:latest
 
 ### Logging
 
-There's a complete OSGi Log Service (1.4) & slf4j logging setup with a default `logback.xml` which can be overriden by a ConfigMap at `/mnt/logback/logback.xml`.
+There's a complete OSGi Log Service (1.4) & slf4j logging setup with a default `logback.xml` which can be overridden by a ConfigMap at `/mnt/logback/logback.xml`.
 
 ### GOGO Telnet shell
 
@@ -44,38 +44,35 @@ docker run -it \
 	rotty3000/config-osgi-k8s-demo:latest
 ```
 
-### Easy System Properties
+### Minikube (Optional)
 
-Any environment variables that start with `-D` will be added to the Java command on startup.
-
-### DEBUG
-
-The `JAVA_OPTS` environent varialbe is ready for passing JVM options, like debugging:
-
-```bash
-docker run \
-	-it \ # run interactively
-	-p 8000:8000 \ # open port 8000 for host debugging
-	--rm \ # remove any existing containers (just for testing)
-	--name config-osgi-k8s-demo \ # call it what you want...
-	-v "$(pwd)/mnt/configs:/mnt/configs" \ # mount the sample scan directory
-	-e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:8000" \ # debug
-	rotty3000/config-osgi-k8s-demo:latest
-```
-
-## Build docker image
-
-If you wish to use the image in minikube, make sure to execute the following in the same terminal before building.
+_If you wish to use the image in Minikube, make sure to execute the following in the same terminal before building._
 
 ```bash
 eval $(minikube docker-env)
 ```
 
+### Build docker image
+
 To build the image, execute:
 
 ```bash
 docker build . --pull --rm -f Dockerfile \
-	-t config-osgi-k8s-demo
+	-t rotty3000/config-osgi-k8s-demo
+```
+
+### DEBUG
+
+The `JAVA_OPTS` environment variable is ready for passing JVM options, like debugging:
+
+```bash
+docker run \
+	-it -p 8000:8000 \
+	--rm --name config-osgi-k8s-demo \
+	-v "$(pwd)/configs:/app/configs" \
+	-v "$(pwd)/logback.xml:/app/log/logback.xml" \
+	-e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:8000" \
+	rotty3000/config-osgi-k8s-demo
 ```
 
 ## ConfigMap Example

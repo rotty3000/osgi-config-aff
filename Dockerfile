@@ -29,11 +29,12 @@ RUN \
 	apk add unzip tree && \
 	unzip /app/exec.jar -d /app/bin && \
 	rm /app/exec.jar /app/bin/start /app/bin/start.bat && \
-	rm -rf /app/bin/META-INF/maven /app/bin/OSGI-OPT && \
-	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive /app/bin/jar/*.jar` && \
+	rm -rf /app/bin/META-INF /app/bin/OSGI-OPT && \
+	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive --module-path /app/bin/jar/ /app/bin/jar/*.jar | tail -1` && \
 	$JAVA_HOME/bin/jlink --add-modules $MODULES,jdk.unsupported,jdk.jdwp.agent --compress=2 --output /app/jre
 
 COPY start /app/bin/start
+
 RUN chmod +x /app/bin/start
 
 RUN tree /app

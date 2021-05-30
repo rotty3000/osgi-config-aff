@@ -23,14 +23,13 @@
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+			<pattern>%-7r %-5level [%thread{20}] [%logger{36}] %msg%n</pattern>
 		</encoder>
 	</appender>
 
-	<logger name="Event.Service.org.apache.felix.framework" level="ERROR" />
-	<logger name="Event.Service.org.apache.felix.gogo.command" level="ERROR" />
-	<logger name="LogService.org.apache.felix.configadmin" level="ERROR" />
-	<logger name="LogService.org.apache.felix.fileinstall" level="DEBUG" />
+	<logger name="Events" level="INFO" />
+	<logger name="LogService.org.apache.felix.configadmin" level="INFO" />
+	<logger name="LogService.org.apache.felix.fileinstall" level="INFO" />
 	<logger name="org.apache.felix.configadmin.plugin.interpolation" level="DEBUG" />
 
 	<root level="ERROR">

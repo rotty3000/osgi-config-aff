@@ -17,7 +17,10 @@
 #    specific language governing permissions and limitations
 #    under the License.
 
-JAVA_CMD="java ${JAVA_OPTS} -cp . aQute.launcher.pre.EmbeddedLauncher"
+LIB=/app/bin/jar
+
+CLASSPATH=$(find $LIB -type f -maxdepth 1 -exec echo -n {}: \;)
+JAVA_CMD="java ${JAVA_OPTS} --class-path ${CLASSPATH} aQute.launcher.Launcher"
 
 echo "====="
 echo "EXEC: ${JAVA_CMD}"

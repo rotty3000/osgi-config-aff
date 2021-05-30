@@ -1,6 +1,7 @@
 .classpath
 .project
 .settings
+.vscode
 bin/
 target/
 pom.xml.tag

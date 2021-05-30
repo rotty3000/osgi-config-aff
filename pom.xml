@@ -26,7 +26,11 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<bnd.version>5.3.0</bnd.version>
+		<java.version>11</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+
+		<bnd.version>6.0.0-SNAPSHOT</bnd.version>
 		<slf4j.version>1.7.22</slf4j.version>
 	</properties>
 
@@ -94,9 +98,22 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>org.apache.felix.atomos</groupId>
+				<artifactId>osgi.core</artifactId>
+				<classifier>AtomosFelix</classifier>
+				<version>8.0.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.atomos</artifactId>
+				<version>1.0.0</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.configadmin</artifactId>
-				<version>1.9.22</version>
+				<version>1.9.23-SNAPSHOT</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -114,7 +131,7 @@
 			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.fileinstall</artifactId>
-				<version>3.7.0</version>
+				<version>3.7.1-SNAPSHOT</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
@@ -162,7 +179,26 @@
 		<repository>
 			<id>apache-snapshots</id>
 			<url>https://repository.apache.org/snapshots/</url>
-			<releases><enabled>false</enabled></releases>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>bnd-snapshots</id>
+			<url>https://bndtools.jfrog.io/bndtools/libs-snapshot-local/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</repository>
 	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>bnd-snapshots</id>
+			<url>https://bndtools.jfrog.io/bndtools/libs-snapshot-local/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
