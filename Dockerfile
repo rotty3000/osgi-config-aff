@@ -33,9 +33,14 @@ RUN \
 	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive --module-path /app/bin/jar/ /app/bin/jar/*.jar | tail -1` && \
 	$JAVA_HOME/bin/jlink --add-modules $MODULES,jdk.unsupported,jdk.jdwp.agent --compress=2 --output /app/jre
 
-COPY start /app/bin/start
-
-RUN chmod +x /app/bin/start
+RUN \
+	echo -e '#!/bin/sh\n\
+LIB=/app/bin/jar\n\
+CLASSPATH=$(find $LIB -type f -maxdepth 1 -exec echo -n {}: \;)\n\
+JAVA_CMD="java ${JAVA_OPTS} --class-path ${CLASSPATH} aQute.launcher.Launcher $@"\n\
+echo -e "=====\\nEXEC: ${JAVA_CMD}\\n====="\n\
+${JAVA_CMD}' >> /app/bin/start && \
+	chmod +x /app/bin/start
 
 RUN tree /app
 
@@ -53,4 +58,4 @@ WORKDIR /app/bin
 
 USER appuser
 
-CMD ["dumb-init", "/app/bin/start"]
+ENTRYPOINT ["dumb-init", "/app/bin/start"]

@@ -20,9 +20,7 @@
 LIB=/app/bin/jar
 
 CLASSPATH=$(find $LIB -type f -maxdepth 1 -exec echo -n {}: \;)
-JAVA_CMD="java ${JAVA_OPTS} --class-path ${CLASSPATH} aQute.launcher.Launcher"
+JAVA_CMD="java ${JAVA_OPTS} --class-path ${CLASSPATH} aQute.launcher.Launcher $@"
 
-echo "====="
-echo "EXEC: ${JAVA_CMD}"
-echo "====="
-eval "${JAVA_CMD}"
+echo -e "=====\nEXEC: ${JAVA_CMD}\n====="
+${JAVA_CMD}
