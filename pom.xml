@@ -125,7 +125,7 @@
 			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.converter</artifactId>
-				<version>1.0.14</version>
+				<version>1.0.16</version>
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
