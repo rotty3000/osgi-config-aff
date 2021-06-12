@@ -34,4 +34,4 @@ docker history <tag>
 
 Reduce image sizes:
 - Add the `--no-cache` argument to `apk` calls to avoid storing the repo index (30+Mb)
-- do `chown` during `COPY` opperations
+- do `chown` during `COPY` operations
