@@ -30,8 +30,11 @@ RUN \
 	unzip /app/exec.jar -d /app/bin && \
 	rm /app/exec.jar /app/bin/start /app/bin/start.bat && \
 	rm -rf /app/bin/META-INF /app/bin/OSGI-OPT && \
-	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive --module-path /app/bin/jar/ /app/bin/jar/*.jar | tail -1` && \
-	$JAVA_HOME/bin/jlink --add-modules $MODULES,jdk.unsupported,jdk.jdwp.agent --compress=2 --output /app/jre
+	mkdir -p /tmp/packages && \
+	cp -r /app/bin/aQute /tmp/packages && \
+	for i in $(find /app/bin/jar -type f -print);do unzip -o $i -d /tmp/packages -x module-info.class META-INF/\* OSGI-INF/\* OSGI-OPT/\*;done && \
+	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive /tmp/packages/ | tail -1` && \
+	$JAVA_HOME/bin/jlink --add-modules $MODULES,jdk.jdwp.agent --compress=2 --output /app/jre
 
 RUN \
 	echo -e '#!/bin/sh\n\
