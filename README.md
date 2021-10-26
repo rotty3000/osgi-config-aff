@@ -2,7 +2,7 @@
 
 ## OSGi Configuration Admin / Kubernetes Integration Prototype
 
-[![CI Build](https://github.com/rotty3000/osgi-config-aff/actions/workflows/maven.yml/badge.svg)](https://github.com/rotty3000/osgi-config-aff/actions/workflows/maven.yml)
+[![CI Build](https://github.com/rotty3000/osgi-config-aff/actions/workflows/build.yml/badge.svg)](https://github.com/rotty3000/osgi-config-aff/actions/workflows/build.yml)
 
 This project produces a Docker image that contains a complete prototype integrating OSGi Configuration Admin with *live*, volume mounted [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
 
