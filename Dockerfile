@@ -33,8 +33,10 @@ RUN \
 	mkdir -p /tmp/packages && \
 	cp -r /app/bin/aQute /tmp/packages && \
 	for i in $(find /app/bin/jar -type f -print);do unzip -o $i -d /tmp/packages -x module-info.class META-INF/\* OSGI-INF/\* OSGI-OPT/\*;done && \
+	$JAVA_HOME/bin/jdeps -verbose:class --ignore-missing-deps --recursive /tmp/packages/ && \
 	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive /tmp/packages/ | tail -1` && \
-	$JAVA_HOME/bin/jlink --add-modules $MODULES,jdk.jdwp.agent --compress=2 --output /app/jre
+	echo "Calculated MODULES: ${MODULES}" && \
+	$JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules $MODULES,jdk.jdwp.agent --compress=2 --output /app/jre
 
 RUN \
 	echo -e '#!/bin/sh\n\
