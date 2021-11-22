@@ -15,7 +15,7 @@
 #    specific language governing permissions and limitations
 #    under the License.
 
-FROM azul/zulu-openjdk-alpine:11 AS build
+FROM azul/zulu-openjdk-alpine:17 AS build
 
 RUN mkdir -p \
 	/app/bin \

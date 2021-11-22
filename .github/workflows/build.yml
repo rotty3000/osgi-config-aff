@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: ${{ (github.repository != 'rotty3000/osgi-config-aff') || (github.event_name == 'pull_request') }}
       matrix:
-        java: [ 11 ]
+        java: [ 17 ]
         os: [ ubuntu-latest ]
     name: JDK${{ matrix.java }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
