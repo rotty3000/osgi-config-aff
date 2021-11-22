@@ -57,8 +57,8 @@ eval $(minikube docker-env)
 To build the image, execute:
 
 ```bash
-docker build . --pull --rm -f Dockerfile \
-	-t rotty3000/config-osgi-k8s-demo
+docker build --pull --rm -f Dockerfile \
+	-t rotty3000/config-osgi-k8s-demo .
 ```
 
 ### DEBUG
