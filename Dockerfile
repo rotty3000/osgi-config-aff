@@ -52,12 +52,14 @@ RUN tree /app
 FROM alpine:3
 
 RUN \
-	apk --no-cache add dumb-init busybox-extras tree && \
+	apk --no-cache add dumb-init tree && \
 	adduser -s /bin/false -D appuser
 
 COPY --from=build --chown=appuser:appuser /app /app
 
 ENV PATH=/app/jre/bin:$PATH
+
+EXPOSE 8000 11311
 
 WORKDIR /app/bin
 

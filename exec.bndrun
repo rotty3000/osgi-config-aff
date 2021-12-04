@@ -21,9 +21,11 @@
 # Setup OSGi Connect in BND Launcher
 #
 -runsystempackages:
+
 -runpath.connect: \
 	org.apache.felix.atomos,\
 	osgi.core
+
 -runproperties.connect: \
 	atomos.content.start=false,\
 	launch.embedded=false
@@ -32,11 +34,7 @@
 # Additional configurations
 #
 -runproperties: \
-	felix.cm.config.plugins=org.apache.felix.configadmin.plugin.interpolation,\
 	felix.fileinstall.dir=/app/configs,\
-	felix.fileinstall.log.level=4,\
-	felix.fileinstall.noInitialDelay=false,\
-	felix.fileinstall.poll=200,\
 	gosh.args="--nointeractive -c telnetd -i 0.0.0.0 -p 11311 start",\
 	logback.configurationFile=file:/app/log/logback.xml,\
 	org.apache.felix.configadmin.plugin.interpolation.secretsdir=/app/configs

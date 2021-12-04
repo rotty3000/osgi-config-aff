@@ -20,4 +20,5 @@
 -runproperties: \
 	logback.configurationFile=${fileuri;${.}/logback.xml},\
 	felix.fileinstall.dir=${.}/configs,\
+	org.apache.felix.configadmin.plugin.interpolation.secretsdir=${.}/configs
 	osgi.console=
