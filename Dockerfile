@@ -39,10 +39,11 @@ RUN \
 	$JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules $MODULES,jdk.jdwp.agent --compress=2 --output /app/jre
 
 RUN \
-	echo -e 'CLASSPATH=$(find /app/bin/jar -type f -maxdepth 1 -exec echo -n {}: \;)\n\
-JAVA_CMD="java ${JAVA_OPTS} --class-path $CLASSPATH aQute.launcher.Launcher"\n\
-echo -e "=====\\nEXEC: ${JAVA_CMD}\\n====="\n\
-${JAVA_CMD}' >> /app/bin/start && \
+	echo -e '\
+		CLASSPATH=$(find /app/bin/jar -type f -maxdepth 1 -exec echo -n {}: \;)\n\
+		JAVA_CMD="java ${JAVA_OPTS} --class-path $CLASSPATH aQute.launcher.Launcher"\n\
+		echo -e "=====\\nEXEC: ${JAVA_CMD}\\n====="\n\
+		${JAVA_CMD}' >> /app/bin/start && \
 	chmod +x /app/bin/start
 
 RUN tree /app
