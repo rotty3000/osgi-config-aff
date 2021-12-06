@@ -32,7 +32,7 @@
 -runproperties.base: \
 	felix.cm.config.plugins=org.apache.felix.configadmin.plugin.interpolation,\
 	felix.fileinstall.log.level=4,\
-	felix.fileinstall.noInitialDelay=false,\
+	felix.fileinstall.noInitialDelay=true,\
 	felix.fileinstall.poll=200
 
 -runfw: org.eclipse.osgi

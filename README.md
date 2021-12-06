@@ -1,32 +1,24 @@
-# config-osgi-k8s-demo
-
-## OSGi Configuration Admin / Kubernetes Integration Prototype
+# OSGi Configuration Admin / Kubernetes Integration Prototype
 
 [![CI Build](https://github.com/rotty3000/osgi-config-aff/actions/workflows/build.yml/badge.svg)](https://github.com/rotty3000/osgi-config-aff/actions/workflows/build.yml)
 
-This project produces a Docker image that contains a complete prototype integrating OSGi Configuration Admin with *live*, volume mounted [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
+This project is an experiment to produce the smallest and fastest Docker image that contains a complete OSGi runtime focusing on OSGi Configuration Admin with *live*, volume mounted [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) and [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
 
-Use ConfigMap or Secret files to mount [Apache Felix FileInstall](https://felix.apache.org/documentation/subprojects/apache-felix-file-install.html) compatible config (`.cfg|.config`) files to the `/app/configs` directory *(or to another directory... if you like, just remember to override the defaults set in the Dockerfile).*
+Use ConfigMaps or Secrets files to mount [Apache Felix FileInstall](https://felix.apache.org/documentation/subprojects/apache-felix-file-install.html) compatible config (`.cfg|.config`) files to the `/app/configs` directory.
 
-The [Apache Felix Interpolation plugin](https://github.com/apache/felix-dev/blob/master/configadmin-plugins/interpolation/README.md) is also configured by default with the `/app/configs` directory and ready to replace placeholders found in your configurations with the Secrets found there.
+The [Apache Felix Interpolation plugin](https://github.com/apache/felix-dev/blob/master/configadmin-plugins/interpolation/README.md) is also configured to use the `/app/configs` directory and stands ready to replace placeholders found in your configurations with the values found there. The interpolation plugin also supports multiple directories using comma-separated syntax.
 
-The interpolation plugin in this setup supports multiple directories using comma-separated syntax to accommodate multiple Secrets directory mounts.
+**Note** *You can dynamically install additional bundles by placing them into the `/app/configs` directory if you wish. But remember the JVM has been reduced using [jlink](https://docs.oracle.com/en/java/javase/17/docs/specs/man/jlink.html). So the dependencies of certain bundles may not be satisfied by parts of the JDK that have been omitted, resulting in them not resolving.*
 
-*FYI* You can even install bundles by placing them into the `/app/configs` directory if you wish.
+## Basic Use
 
-### Basic Use
-
-Start the container using the most basic invocation:
+Start the container using a basic invocation:
 
 ```
 docker run --pull rotty3000/config-osgi-k8s-demo:latest
 ```
 
-### Logging
-
-There's a complete OSGi Log Service (1.4) with Logback & slf4j logging setup with a default `logback.xml` which can be overridden by a ConfigMap at `/app/log/logback.xml`.
-
-### Build the Docker image
+## Build the Docker image
 
 To build the image, execute:
 
@@ -36,7 +28,7 @@ docker build --pull --rm -f Dockerfile -t config-osgi-k8s-demo .
 
 ### Run the image (with local gogo shell access)
 
-To run the container with gogo shell access run it like so
+To run the container with gogo shell access expose port 11311:
 
 ```bash
 docker run \
@@ -45,7 +37,7 @@ docker run \
 	config-osgi-k8s-demo:latest
 ```
 
-The you can connect with a telnet client from localhost:
+You can connect with a telnet client from localhost:
 
 ```bash
 ]$ telnet localhost 11311
@@ -55,7 +47,11 @@ Escape character is '^]'.
 g!
 ```
 
-Here's a more thorough example using the sample files in the local `configs` directory and the `logback.xml` that turns up the configuration infra log levels.
+## Logging
+
+The container contains the OSGi Log Service (1.4) with Logback & SLF4J API which is configured using a default `logback.xml` which can be overridden by a ConfigMap at `/app/log/logback.xml`.
+
+Here's a more thorough run example using the sample files in the local `configs` directory and the `logback.xml` that turns up the configuration infra log levels.
 
 ```bash
 docker run \
@@ -66,13 +62,7 @@ docker run \
 	config-osgi-k8s-demo:latest
 ```
 
-### Minikube (Optional)
-
-_If you wish to use the image in Minikube, make sure to execute the following in the same terminal before building._
-
-```bash
-eval $(minikube docker-env)
-```
+Edit the config files to observe live updates.
 
 ### Debugging/Tuning the JVM
 
@@ -93,6 +83,14 @@ docker run \
 	-v "$(pwd)/logback.xml:/app/log/logback.xml" \
 	-e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8000" \
 	config-osgi-k8s-demo
+```
+
+### Minikube (Optional)
+
+_If you wish to use the image in Minikube, make sure to execute the following in the same terminal before building._
+
+```bash
+eval $(minikube docker-env)
 ```
 
 ## ConfigMap Example

@@ -39,10 +39,8 @@ RUN \
 	$JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules $MODULES,jdk.jdwp.agent --compress=2 --output /app/jre
 
 RUN \
-	echo -e '#!/bin/sh\n\
-LIB=/app/bin/jar\n\
-CLASSPATH=$(find $LIB -type f -maxdepth 1 -exec echo -n {}: \;)\n\
-JAVA_CMD="java ${JAVA_OPTS} --class-path ${CLASSPATH} aQute.launcher.Launcher $@"\n\
+	echo -e 'CLASSPATH=$(find /app/bin/jar -type f -maxdepth 1 -exec echo -n {}: \;)\n\
+JAVA_CMD="java ${JAVA_OPTS} --class-path $CLASSPATH aQute.launcher.Launcher"\n\
 echo -e "=====\\nEXEC: ${JAVA_CMD}\\n====="\n\
 ${JAVA_CMD}' >> /app/bin/start && \
 	chmod +x /app/bin/start
@@ -52,7 +50,7 @@ RUN tree /app
 FROM alpine:3
 
 RUN \
-	apk --no-cache add dumb-init tree && \
+	apk --no-cache add tini && \
 	adduser -s /bin/false -D appuser
 
 COPY --from=build --chown=appuser:appuser /app /app
@@ -65,4 +63,8 @@ WORKDIR /app/bin
 
 USER appuser
 
-ENTRYPOINT ["dumb-init", "/app/bin/start"]
+ENTRYPOINT [\
+	"/sbin/tini", \
+	"sh", "-c", \
+	"/app/bin/start" \
+]
