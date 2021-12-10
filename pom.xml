@@ -36,13 +36,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- <dependency>
-				<groupId>org.apache.felix.atomos</groupId>
-				<artifactId>osgi.core</artifactId>
-				<classifier>AtomosFelix</classifier>
-				<version>8.0.0</version>
-				<scope>runtime</scope>
-			</dependency> -->
 			<dependency>
 				<groupId>org.apache.felix.atomos</groupId>
 				<artifactId>osgi.core</artifactId>
@@ -80,24 +73,6 @@
 				<version>3.7.2</version>
 				<scope>runtime</scope>
 			</dependency>
-			<!-- <dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.framework</artifactId>
-				<version>7.0.1</version>
-				<scope>runtime</scope>
-			</dependency> -->
-			<!-- <dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.log</artifactId>
-				<version>1.2.4</version>
-				<scope>runtime</scope>
-			</dependency> -->
-			<!-- <dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.log.extension</artifactId>
-				<version>1.0.0</version>
-				<scope>runtime</scope>
-			</dependency> -->
 			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.logback</artifactId>
