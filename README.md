@@ -23,12 +23,31 @@ docker run --pull rotty3000/config-osgi-k8s-demo:latest
 To build the image, execute:
 
 ```bash
-docker build --pull --rm -f Dockerfile -t config-osgi-k8s-demo .
+docker build --build-arg BASE_DIR=./target/assembly \
+	--pull --rm -f Dockerfile -t config-osgi-k8s-demo .
 ```
 
-### Run the image (with local gogo shell access)
+The `Dockerfile` in this project is intended to be reusable and so there are a number of `ARG`s defined that control it's execution:
 
-To run the container with gogo shell access expose port 11311:
+* `BASE_DIR` - This argument is required and the docker build will fail if it is not set. The value must point to a directory containing all dependencies and resources required to run an application.
+* `CLASSPATH` - If `BASE_DIR` contains a non-trivial folder structure you can use the `CLASSPATH` argument to tune it's definition. _The default value is `.:jar/*`._
+* `START_SCRIPT` - The name of an `sh` script file used to launch the application. It's path must be relative to the `BASE_DIR`. _The default value is `start`._
+* `EXTRA_MODULES` - Specify any additional JDK modules to add to the calculated set of modules. _The default value is `jdk.jdwp.agent`._
+* `PRINT_JDEPS` - Print the result from the `jdeps` command to diagnose why each module was included. _The default value is empty, meaning don't print the result._
+
+Here's an example execution using some of the arguments:
+
+```bash
+docker build \
+	--build-arg BASE_DIR=./target/assembly \
+	--build-arg PRINT_JDEPS=1 \
+	--pull --rm -f Dockerfile -t config-osgi-k8s-demo . \
+	| tee target/docker.log
+```
+
+## Run the image (with local gogo shell access)
+
+To run the container with gogo shell access, expose port 11311:
 
 ```bash
 docker run \
@@ -49,7 +68,7 @@ g!
 
 ## Logging
 
-The container contains the OSGi Log Service (1.4) with Logback & SLF4J API which is configured using a default `logback.xml` which can be overridden by a ConfigMap at `/app/log/logback.xml`.
+The container contains the OSGi Log Service (1.4) with Logback & SLF4J API which is configured using a default `logback.xml` which can be overridden by a ConfigMap at `/app/bin/logback.xml`.
 
 Here's a more thorough run example using the sample files in the local `configs` directory and the `logback.xml` that turns up the configuration infra log levels.
 
@@ -57,7 +76,7 @@ Here's a more thorough run example using the sample files in the local `configs`
 docker run \
 	-it -p 11311:11311 \
 	--rm --name config-osgi-k8s-demo \
-	-v "$(pwd)/logback.xml:/app/log/logback.xml" \
+	-v "$(pwd)/logback.xml:/app/bin/logback.xml" \
 	-v "$(pwd)/configs:/app/configs" \
 	config-osgi-k8s-demo:latest
 ```
@@ -80,7 +99,7 @@ docker run \
 	-it -p 11311:11311 -p 8000:8000 \
 	--rm --name config-osgi-k8s-demo \
 	-v "$(pwd)/configs:/app/configs" \
-	-v "$(pwd)/logback.xml:/app/log/logback.xml" \
+	-v "$(pwd)/logback.xml:/app/bin/logback.xml" \
 	-e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8000" \
 	config-osgi-k8s-demo
 ```
@@ -138,7 +157,7 @@ spec:
 		mountPath: "/app/configs" # Mount it this path
 		readOnly: true
 	  - name: logback-config
-		mountPath: "/app/log"
+		mountPath: "/app/bin"
 		readOnly: true
   volumes:
 	# You set volumes at the Pod level, then mount them into containers inside that Pod

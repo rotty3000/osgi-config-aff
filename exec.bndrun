@@ -36,5 +36,4 @@
 -runproperties: \
 	felix.fileinstall.dir=/app/configs,\
 	gosh.args="--nointeractive -c telnetd -i 0.0.0.0 -p 11311 start",\
-	logback.configurationFile=file:/app/log/logback.xml,\
 	org.apache.felix.configadmin.plugin.interpolation.secretsdir=/app/configs

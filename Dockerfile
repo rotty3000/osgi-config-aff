@@ -17,38 +17,44 @@
 
 FROM azul/zulu-openjdk-alpine:17 AS build
 
-RUN mkdir -p \
-	/app/bin \
-	/app/configs \
-	/app/log
+ARG BASE_DIR
+ARG START_SCRIPT=start
+ARG EXTRA_MODULES=jdk.jdwp.agent
+ARG PRINT_JDEPS
 
-COPY target/exec.jar /app/exec.jar
-COPY default-logback.xml /app/log/logback.xml
+COPY $BASE_DIR /app/bin
 
 RUN \
+	if [ "${BASE_DIR}x" = "x" ];then \
+		echo ">>>>>> Need to pass --build-arg BASE_DIR=<value>"; exit 1; \
+	else \
+		echo ">>>>>> BASE_DIR=${BASE_DIR}"; \
+	fi && \
+	if [ ! -f /app/bin/$START_SCRIPT ];then \
+		echo ">>>>>> /app/bin/$START_SCRIPT does not exist. Pass --build-arg START_SCRIPT=<value> relative to BASE_DIR argument"; \
+		exit 1; \
+	else \
+		echo ">>>>>> START_SCRIPT=${START_SCRIPT}"; \
+	fi && \
 	apk add unzip tree && \
-	unzip /app/exec.jar -d /app/bin && \
-	rm /app/exec.jar /app/bin/start /app/bin/start.bat && \
-	rm -rf /app/bin/META-INF /app/bin/OSGI-OPT && \
 	mkdir -p /tmp/packages && \
-	cp -r /app/bin/aQute /tmp/packages && \
-	for i in $(find /app/bin/jar -type f -print);do unzip -o $i -d /tmp/packages -x module-info.class META-INF/\* OSGI-INF/\* OSGI-OPT/\*;done && \
-	$JAVA_HOME/bin/jdeps -verbose:class --ignore-missing-deps --recursive /tmp/packages/ && \
+	(cd /app/bin && find . -type f -not -iname '*.jar' -exec cp --parents '{}' '/tmp/packages/' ';') && \
+	for i in $(find /app/bin/ -type f -iname '*.jar' -print);do unzip -q -o $i -d /tmp/packages -x module-info.class META-INF/\* OSGI-INF/\* OSGI-OPT/\* 2> /dev/null;done && \
+	if [ "${PRINT_JDEPS}x" != "x" ];then $JAVA_HOME/bin/jdeps -verbose:class --ignore-missing-deps --recursive /tmp/packages/;fi && \
 	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive /tmp/packages/ | tail -1` && \
-	echo "Calculated MODULES: ${MODULES}" && \
-	$JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules $MODULES,jdk.jdwp.agent --compress=2 --output /app/jre
-
-RUN \
-	echo -e '\
-		CLASSPATH=$(find /app/bin/jar -type f -maxdepth 1 -exec echo -n {}: \;)\n\
-		JAVA_CMD="java ${JAVA_OPTS} --class-path $CLASSPATH aQute.launcher.Launcher"\n\
-		echo -e "=====\\nEXEC: ${JAVA_CMD}\\n====="\n\
-		${JAVA_CMD}' >> /app/bin/start && \
+	MODULES=${MODULES}${EXTRA_MODULES:+,${EXTRA_MODULES}} && \
+	echo "Calculated JDK MODULES: ${MODULES}" && \
+	$JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules ${MODULES} --compress=2 --output /app/jre && \
+	mv /app/bin/${START_SCRIPT} /app/bin/start && \
 	chmod +x /app/bin/start
 
-RUN tree /app
+RUN tree -h /app
 
 FROM alpine:3
+
+ARG CLASSPATH=.:jar/*
+ENV CLASSPATH=${CLASSPATH}
+ENV JAVA_OPTS=-XX:+UseZGC
 
 RUN \
 	apk --no-cache add tini && \
@@ -58,14 +64,11 @@ COPY --from=build --chown=appuser:appuser /app /app
 
 ENV PATH=/app/jre/bin:$PATH
 
-EXPOSE 8000 11311
-
 WORKDIR /app/bin
 
 USER appuser
 
 ENTRYPOINT [\
 	"/sbin/tini", \
-	"sh", "-c", \
 	"/app/bin/start" \
 ]
