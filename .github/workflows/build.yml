@@ -65,7 +65,7 @@ jobs:
       if: ${{ !strategy.fail-fast }}
       run: >
         IMAGE_VERSION=${GITHUB_REF##*/};
-        docker build . --file Dockerfile --tag $DOCKER_USER/$IMAGE_NAME:${IMAGE_VERSION/main/latest};
+        docker build --build-arg BASE_DIR=./target/assembly --file Dockerfile --tag $DOCKER_USER/$IMAGE_NAME:${IMAGE_VERSION/main/latest} .;
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin;
         docker push $DOCKER_USER/$IMAGE_NAME:${IMAGE_VERSION/main/latest}
 
