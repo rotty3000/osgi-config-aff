@@ -20,7 +20,13 @@ docker run --pull rotty3000/config-osgi-k8s-demo:latest
 
 ## Build the Docker image
 
-To build the image, execute:
+First you must build the maven project:
+
+```bash
+mvn clean verify
+```
+
+Then, to build the image, execute:
 
 ```bash
 docker build --build-arg BASE_DIR=./target/assembly \
