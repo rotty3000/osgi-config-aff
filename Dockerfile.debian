@@ -15,24 +15,23 @@
 #    specific language governing permissions and limitations
 #    under the License.
 
-FROM azul/zulu-openjdk-alpine:17 AS build
+FROM maven:3.8.4-openjdk-17-slim AS build
 
 RUN \
-	apk add curl tar perl-xml-twig tree && \
+	apt-get -qq update && \
+	apt-get -qq install curl jq libxml-compile-perl tree -y && \
 	mkdir -p /app/bin && \
-	curl https://maven.apache.org/xsd/maven-4.0.0.xsd -o /app/bin/maven-4.0.0.xsd && \
-	curl https://downloads.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz -o /app/bin/apache-maven-3.8.4-bin.tar.gz && \
-	tar -xf /app/bin/apache-maven-3.8.4-bin.tar.gz --directory /app/bin/ && \
-	mv /app/bin/apache-maven-3.8.4 /app/bin/maven
+	curl https://maven.apache.org/xsd/maven-4.0.0.xsd -o /app/bin/maven-4.0.0.xsd
 
 COPY pom.xml base.bndrun exec.bndrun LICENSE /app/bin/
 
+RUN tree -h /app
+
 RUN \
-	tree -h /app &&\
-	MAIN_MODULE=$(xml_grep --text_only '/project/artifactId' /app/bin/pom.xml) && \
-	MODULES=${MAIN_MODULE},jdk.jdwp.agent && \
+	export MAIN_MODULE=$(xml2json /app/bin/pom.xml /app/bin/maven-4.0.0.xsd | jq -r '.project.artifactId') && \
+	export MODULES=${MAIN_MODULE},jdk.jdwp.agent && \
 	echo "MODULES: ${MODULES}" && \
-	/app/bin/maven/bin/mvn -f /app/bin/ -ntp verify && \
+	mvn -f /app/bin/ -ntp verify && \
 	$JAVA_HOME/bin/jlink \
 		--no-header-files \
 		--no-man-pages \
@@ -42,12 +41,9 @@ RUN \
 		--launcher start=${MAIN_MODULE} \
 		--output /app/jre
 
-COPY start /app/jre/bin/start
-
 RUN \
 	rm -rf /app/bin && \
-	tree -h /app && \
-	cat /app/jre/bin/start
+	tree -h /app
 
 FROM alpine:3
 
@@ -66,5 +62,5 @@ USER appuser
 
 ENTRYPOINT [\
 	"/sbin/tini", \
-	"/app/jre/bin/start" \
+	"start" \
 ]

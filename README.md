@@ -29,26 +29,7 @@ mvn clean verify
 Then, to build the image, execute:
 
 ```bash
-docker build --build-arg BASE_DIR=./target/assembly \
-  --pull --rm -f Dockerfile -t config-osgi-k8s-demo .
-```
-
-The `Dockerfile` in this project is intended to be reusable and so there are a number of `ARG`s defined that control it's execution:
-
-* `BASE_DIR` - This argument is required and the docker build will fail if it is not set. The value must point to a directory containing all dependencies and resources required to run an application.
-* `CLASSPATH` - If `BASE_DIR` contains a non-trivial folder structure you can use the `CLASSPATH` argument to tune it's definition. _The default value is `.:jar/*`._
-* `START_SCRIPT` - The name of an `sh` script file used to launch the application. It's path must be relative to the `BASE_DIR`. _The default value is `start`._
-* `EXTRA_MODULES` - Specify any additional JDK modules to add to the calculated set of modules. _The default value is `jdk.jdwp.agent`._
-* `PRINT_JDEPS` - Print the result from the `jdeps` command to diagnose why each module was included. _The default value is empty, meaning don't print the result._
-
-Here's an example execution using some of the arguments:
-
-```bash
-docker build \
-  --build-arg BASE_DIR=./target/assembly \
-  --build-arg PRINT_JDEPS=1 \
-  --pull --rm -f Dockerfile -t config-osgi-k8s-demo . \
-  | tee target/docker.log
+docker build -t <tag> .
 ```
 
 ## Run the image (with local gogo shell access)
@@ -57,19 +38,15 @@ To run the container with gogo shell access, expose port 11311:
 
 ```bash
 docker run \
-  -it -p 11311:11311 \
-  --rm --name config-osgi-k8s-demo \
-  config-osgi-k8s-demo:latest
+	-it -p 11311:11311 \
+	--rm --name <name> \
+	<tag>
 ```
 
 You can connect with a telnet client from localhost:
 
 ```bash
-]$ telnet localhost 11311
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-g!
+telnet localhost 11311
 ```
 
 ## Logging
@@ -80,11 +57,11 @@ Here's a more thorough run example using the sample files in the local `configs`
 
 ```bash
 docker run \
-  -it -p 11311:11311 \
-  --rm --name config-osgi-k8s-demo \
-  -v "$(pwd)/logback.xml:/app/bin/logback.xml" \
-  -v "$(pwd)/configs:/app/configs" \
-  config-osgi-k8s-demo:latest
+	-it -p 11311:11311 \
+	--rm --name <name> \
+	-v "$(pwd)/logback.xml:/app/bin/logback.xml" \
+	-v "$(pwd)/configs:/app/configs" \
+	<tag>
 ```
 
 Edit the config files to observe live updates.
@@ -102,12 +79,12 @@ Here's a local invocation using the docker run command:
 
 ```bash
 docker run \
-  -it -p 11311:11311 -p 8000:8000 \
-  --rm --name config-osgi-k8s-demo \
-  -v "$(pwd)/configs:/app/configs" \
-  -v "$(pwd)/logback.xml:/app/bin/logback.xml" \
-  -e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8000" \
-  config-osgi-k8s-demo
+	-it -p 11311:11311 -p 8000:8000 \
+	--rm --name <name> \
+	-v "$(pwd)/configs:/app/configs" \
+	-v "$(pwd)/logback.xml:/app/bin/logback.xml" \
+	-e JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8000" \
+	<tag>
 ```
 
 ### Minikube (Optional)
@@ -125,15 +102,15 @@ Consider the following Kubernetes Config Map:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: osgi-configmap-demo
+name: osgi-configmap-demo
 data:
-  # property-like keys; each key maps to a simple value
-  player_initial_lives: "3"
+# property-like keys; each key maps to a simple value
+player_initial_lives: "3"
 
-  # FileInstall Config Files
-  game.pid.config: |
-  player.initial.lives="$[env:player_initial_lives]"
-  player.maximum-lives="5"
+# FileInstall Config Files
+game.pid.config: |
+player.initial.lives="$[env:player_initial_lives]"
+player.maximum-lives="5"
 ```
 
 Now let's consider the following Pod definition:
@@ -141,45 +118,45 @@ Now let's consider the following Pod definition:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: osgi-configmap-demo-pod
+name: osgi-configmap-demo-pod
 spec:
-  containers:
-  - image: config-osgi-k8s-demo
-    name: osgi-configmap-demo-pod-demo
-    imagePullPolicy: Never
-    resources:
-    limits:
-      cpu: "250m"
-      memory: "128Mi"
-    env:
-    # Define an environment variable
-    - name: player_initial_lives
-      valueFrom:
-      configMapKeyRef:
-        name: osgi-configmap-demo # The ConfigMap this value comes from.
-        key: player_initial_lives # The key to fetch.
-    volumeMounts:
-    - name: osgi-config         # Mount the volume with this name
-    mountPath: "/app/configs" # Mount it this path
-    readOnly: true
-    - name: logback-config
-    mountPath: "/app/bin"
-    readOnly: true
-  volumes:
-  # You set volumes at the Pod level, then mount them into containers inside that Pod
-  - name: osgi-config
-    configMap:
-    # Provide the name of the ConfigMap you want to mount.
-    name: osgi-configmap-demo
-    # An array of keys from the ConfigMap to create as files
-    # These are the OSGi FileInstall configuration files to be mounted
-    items:
-    - key: "game.pid.config"
-      path: "game.pid.config"
-  - name: logback-config
-    configMap:
-    name: logback-configmap-demo
-    items:
-    - key: "logback.xml"
-      path: "logback.xml"
+containers:
+- image: config-osgi-k8s-demo
+	name: osgi-configmap-demo-pod-demo
+	imagePullPolicy: Never
+	resources:
+	limits:
+	cpu: "250m"
+	memory: "128Mi"
+	env:
+	# Define an environment variable
+	- name: player_initial_lives
+	valueFrom:
+	configMapKeyRef:
+		name: osgi-configmap-demo # The ConfigMap this value comes from.
+		key: player_initial_lives # The key to fetch.
+	volumeMounts:
+	- name: osgi-config         # Mount the volume with this name
+	mountPath: "/app/configs" # Mount it this path
+	readOnly: true
+	- name: logback-config
+	mountPath: "/app/bin"
+	readOnly: true
+volumes:
+# You set volumes at the Pod level, then mount them into containers inside that Pod
+- name: osgi-config
+	configMap:
+	# Provide the name of the ConfigMap you want to mount.
+	name: osgi-configmap-demo
+	# An array of keys from the ConfigMap to create as files
+	# These are the OSGi FileInstall configuration files to be mounted
+	items:
+	- key: "game.pid.config"
+	path: "game.pid.config"
+- name: logback-config
+	configMap:
+	name: logback-configmap-demo
+	items:
+	- key: "logback.xml"
+	path: "logback.xml"
 ```

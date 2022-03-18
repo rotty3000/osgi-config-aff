@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.rotty3000</groupId>
-	<artifactId>com.github.rotty3000.osgi-config-aff</artifactId>
+	<artifactId>com.github.rotty3000.osgi.config.aff</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -30,7 +30,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 
-		<bnd.version>6.2.0</bnd.version>
+		<bnd.version>6.3.0-SNAPSHOT</bnd.version>
 		<slf4j.version>1.7.22</slf4j.version>
 	</properties>
 
@@ -143,41 +143,6 @@
 							<bndruns>
 								<bndrun>exec.bndrun</bndrun>
 							</bndruns>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>setup-assembly</id>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<target>
-								<unzip dest="${project.build.directory}/assembly">
-									<patternset>
-										<exclude name="**/*.java"/>
-										<exclude name="META-INF/maven/"/>
-										<exclude name="OSGI-OPT/"/>
-									</patternset>
-									<fileset dir="${project.build.directory}">
-										<include name="exec.jar"/>
-									</fileset>
-								</unzip>
-								<echo file="${project.build.directory}/assembly/start" append="false"><![CDATA[#!/bin/sh
-JAVA_CMD="java ${JAVA_OPTS} -cp ${CLASSPATH} aQute.launcher.pre.EmbeddedLauncher"
-echo -e "=====\nEXEC: ${JAVA_CMD}\n====="
-${JAVA_CMD}
-
-]]></echo>
-								<copy file="${basedir}/default-logback.xml" tofile="${project.build.directory}/assembly/logback.xml"/>
-							</target>
 						</configuration>
 					</execution>
 				</executions>

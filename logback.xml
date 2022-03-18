@@ -28,11 +28,12 @@
 	</appender>
 
 	<logger name="Events" level="INFO" />
-	<logger name="LogService.org.apache.felix.configadmin" level="INFO" />
-	<logger name="LogService.org.apache.felix.fileinstall" level="INFO" />
+	<logger name="Events.Bundle" level="ERROR" />
+	<logger name="Events.Service" level="ERROR" />
+	<logger name="LogService" level="INFO" />
 	<logger name="org.apache.felix.configadmin.plugin.interpolation" level="DEBUG" />
 
-	<root level="ERROR">
+	<root level="WARN">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

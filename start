@@ -1,0 +1,4 @@
+#!/bin/sh
+JLINK_VM_OPTIONS="$JAVA_OPTS"
+DIR=`dirname $0`
+$DIR/java $JLINK_VM_OPTIONS -m com.github.rotty3000.osgi.config.aff/aQute.launcher.pre.EmbeddedLauncher "$@"
