@@ -23,7 +23,6 @@
 	<groupId>com.github.rotty3000</groupId>
 	<artifactId>com.github.rotty3000.osgi.config.aff</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
 
 	<properties>
 		<java.version>17</java.version>
@@ -33,6 +32,24 @@
 		<bnd.version>6.3.0-SNAPSHOT</bnd.version>
 		<slf4j.version>1.7.22</slf4j.version>
 	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.service.component.annotations</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.service.log</artifactId>
+			<version>1.4.0</version><!--$NO-MVN-MAN-VER$-->
+		</dependency>
+		<dependency>
+			<groupId>io.kubernetes</groupId>
+			<artifactId>client-java</artifactId>
+			<version>10.0.0</version>
+		</dependency>
+	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
