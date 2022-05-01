@@ -29,26 +29,25 @@ mvn clean verify
 Then, to build the image, execute:
 
 ```bash
-docker build --build-arg BASE_DIR=./target/assembly \
-  --pull --rm -f Dockerfile -t config-osgi-k8s-demo .
+docker build \
+	-t <tag> \
+	--build-arg EXECUTABLE_JAR=<path_to_executable_jar> \
+	--build-arg MODULE_NAME=<module_name> .
 ```
 
 The `Dockerfile` in this project is intended to be reusable and so there are a number of `ARG`s defined that control it's execution:
 
-* `BASE_DIR` - This argument is required and the docker build will fail if it is not set. The value must point to a directory containing all dependencies and resources required to run an application.
-* `CLASSPATH` - If `BASE_DIR` contains a non-trivial folder structure you can use the `CLASSPATH` argument to tune it's definition. _The default value is `.:jar/*`._
-* `START_SCRIPT` - The name of an `sh` script file used to launch the application. It's path must be relative to the `BASE_DIR`. _The default value is `start`._
-* `EXTRA_MODULES` - Specify any additional JDK modules to add to the calculated set of modules. _The default value is `jdk.jdwp.agent`._
-* `PRINT_JDEPS` - Print the result from the `jdeps` command to diagnose why each module was included. _The default value is empty, meaning don't print the result._
+* `EXECUTABLE_JAR` - (required) Path to executable jar.
+* `MODULE_NAME` - (required) Module name of the executable jar.
+* `EXTRA_MODULES` - (optional) Specify any additional JDK modules to add to the calculated set of modules. _For example: `jdk.jdwp.agent`._
 
 Here's an example execution using some of the arguments:
 
 ```bash
 docker build \
-  --build-arg BASE_DIR=./target/assembly \
-  --build-arg PRINT_JDEPS=1 \
-  --pull --rm -f Dockerfile -t config-osgi-k8s-demo . \
-  | tee target/docker.log
+  --build-arg EXECUTABLE_JAR=target/exec.jar \
+  --build-arg MODULE_NAME=com.github.rotty3000.osgi.config.aff \
+  --pull --rm -f Dockerfile -t config-osgi-k8s-demo .
 ```
 
 ## Run the image (with local gogo shell access)

@@ -17,6 +17,12 @@
 
 -include: base.bndrun
 
+-jpms-module-info: \
+	${project.artifactId};\
+		version=${project.version};\
+		ee=JavaSE-${java.specification.version}
+-jpms-module-info-options: jdk.unsupported;static=false
+
 #
 # Setup OSGi Connect in BND Launcher
 #
@@ -27,8 +33,7 @@
 	osgi.core
 
 -runproperties.connect: \
-	atomos.content.start=false,\
-	launch.embedded=false
+	atomos.content.start=false
 
 #
 # Additional configurations

@@ -17,44 +17,34 @@
 
 FROM azul/zulu-openjdk-alpine:17 AS build
 
-ARG BASE_DIR
-ARG START_SCRIPT=start
-ARG EXTRA_MODULES=jdk.jdwp.agent
-ARG PRINT_JDEPS
+ARG EXECUTABLE_JAR
+ARG MODULE_NAME
+ARG EXTRA_MODULES
 
-COPY $BASE_DIR /app/bin
+COPY $EXECUTABLE_JAR /tmp/$EXECUTABLE_JAR
 
 RUN \
-	if [ "${BASE_DIR}x" = "x" ];then \
-		echo ">>>>>> Need to pass --build-arg BASE_DIR=<value>"; exit 1; \
-	else \
-		echo ">>>>>> BASE_DIR=${BASE_DIR}"; \
-	fi && \
-	if [ ! -f /app/bin/$START_SCRIPT ];then \
-		echo ">>>>>> /app/bin/$START_SCRIPT does not exist. Pass --build-arg START_SCRIPT=<value> relative to BASE_DIR argument"; \
-		exit 1; \
-	else \
-		echo ">>>>>> START_SCRIPT=${START_SCRIPT}"; \
-	fi && \
-	apk add unzip tree && \
-	mkdir -p /tmp/packages && \
-	(cd /app/bin && find . -type f -not -iname '*.jar' -exec cp --parents '{}' '/tmp/packages/' ';') && \
-	for i in $(find /app/bin/ -type f -iname '*.jar' -print);do unzip -q -o $i -d /tmp/packages -x module-info.class META-INF/\* OSGI-INF/\* OSGI-OPT/\* 2> /dev/null;done && \
-	if [ "${PRINT_JDEPS}x" != "x" ];then $JAVA_HOME/bin/jdeps -verbose:class --ignore-missing-deps --recursive /tmp/packages/;fi && \
-	MODULES=`$JAVA_HOME/bin/jdeps --print-module-deps --ignore-missing-deps --recursive /tmp/packages/ | tail -1` && \
-	MODULES=${MODULES}${EXTRA_MODULES:+,${EXTRA_MODULES}} && \
-	echo "Calculated JDK MODULES: ${MODULES}" && \
-	$JAVA_HOME/bin/jlink --no-header-files --no-man-pages --add-modules ${MODULES} --compress=2 --output /app/jre && \
-	mv /app/bin/${START_SCRIPT} /app/bin/start && \
-	chmod +x /app/bin/start
-
-RUN tree -h /app
+	mkdir -p /app/bin/ && \
+	$JAVA_HOME/bin/jlink \
+		--add-modules $MODULE_NAME${EXTRA_MODULES:+,$EXTRA_MODULES} \
+		--compress=2 \
+		--module-path /tmp/$EXECUTABLE_JAR \
+		--no-header-files \
+		--no-man-pages \
+		--output /app/jre && \
+	echo '#!/bin/sh' > /app/bin/start && \
+	echo "JAVA_CMD=\"java \${JAVA_OPTS} -m $MODULE_NAME/aQute.launcher.pre.EmbeddedLauncher\"" >> /app/bin/start && \
+	echo 'echo -e "=====\nEXEC: ${JAVA_CMD}\n====="' >> /app/bin/start && \
+	echo '${JAVA_CMD} "$@"' >> /app/bin/start && \
+	echo "### START SCRIPT ###" && \
+	cat /app/bin/start && \
+	echo "####################" && \
+	chmod +x /app/bin/start && \
+	/app/jre/bin/java --list-modules
 
 FROM alpine:3
 
-ARG CLASSPATH=.:jar/*
-ENV CLASSPATH=${CLASSPATH}
-ENV JAVA_OPTS=-XX:+UseZGC
+ENV JAVA_OPTS="${JAVA_OPTS:--XX:+UseZGC}"
 
 RUN \
 	apk --no-cache add tini && \
