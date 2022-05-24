@@ -27,7 +27,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="Events" level="INFO" />
+	<logger name="Events" level="ERROR" />
 	<logger name="LogService.org.apache.felix.configadmin" level="INFO" />
 	<logger name="LogService.org.apache.felix.fileinstall" level="INFO" />
 	<logger name="org.apache.felix.configadmin.plugin.interpolation" level="DEBUG" />

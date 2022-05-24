@@ -15,7 +15,7 @@ The [Apache Felix Interpolation plugin](https://github.com/apache/felix-dev/blob
 Start the container using a basic invocation:
 
 ```
-docker run --pull rotty3000/config-osgi-k8s-demo:latest
+docker run rotty3000/config-osgi-k8s-demo:latest
 ```
 
 ## Build the Docker image

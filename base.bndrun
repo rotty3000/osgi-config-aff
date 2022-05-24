@@ -16,6 +16,9 @@
 #    under the License.
 
 -runpath.base: \
+	\
+	com.github.rotty3000.osgi.config.aff,\
+	\
 	ch.qos.logback.classic,\
 	ch.qos.logback.core,\
 	org.apache.felix.logback,\
@@ -33,7 +36,14 @@
 	felix.cm.config.plugins=org.apache.felix.configadmin.plugin.interpolation,\
 	felix.fileinstall.log.level=4,\
 	felix.fileinstall.noInitialDelay=true,\
-	felix.fileinstall.poll=200
+	felix.fileinstall.poll=200,\
+	launch.activators=com.github.rotty3000.osgi.config.aff.StartupMeasurementBundleActivator
+
+-runvm: \
+	"-XX:FlightRecorderOptions=stackdepth=128",\
+	"-XX:StartFlightRecording=,duration=200s,filename=flight-${tstamp}.jfr",\
+	"-XX:+UseZGC",\
+	"-Xmx256m"
 
 -runfw: org.eclipse.osgi
 

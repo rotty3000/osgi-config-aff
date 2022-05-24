@@ -23,16 +23,30 @@
 	<groupId>com.github.rotty3000</groupId>
 	<artifactId>com.github.rotty3000.osgi.config.aff</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<!-- <packaging>pom</packaging> -->
 
 	<properties>
 		<java.version>17</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 
-		<bnd.version>6.3.0-SNAPSHOT</bnd.version>
+		<bnd.version>6.4.0-SNAPSHOT</bnd.version>
 		<slf4j.version>1.7.22</slf4j.version>
 	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>biz.aQute.bnd</groupId>
+			<artifactId>biz.aQute.launcher</artifactId>
+			<version>${bnd.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>osgi.core</artifactId>
+			<version>6.0.0</version>
+		</dependency>
+	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
@@ -104,6 +118,18 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+				<version>${bnd.version}</version>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<goals><goal>jar</goal></goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-resolver-maven-plugin</artifactId>
@@ -186,6 +212,11 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
+		<repository>
+			<id>bnd-release</id>
+			<url>https://bndtools.jfrog.io/bndtools/libs-release/</url>
+			<layout>default</layout>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -195,6 +226,11 @@
 			<releases>
 				<enabled>false</enabled>
 			</releases>
+		</pluginRepository>
+		<pluginRepository>
+			<id>bnd-release</id>
+			<url>https://bndtools.jfrog.io/bndtools/libs-release/</url>
+			<layout>default</layout>
 		</pluginRepository>
 	</pluginRepositories>
 </project>
