@@ -30,7 +30,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 
-		<bnd.version>6.4.0-SNAPSHOT</bnd.version>
+		<bnd.version>7.0.0-SNAPSHOT</bnd.version>
 		<slf4j.version>1.7.22</slf4j.version>
 	</properties>
 
